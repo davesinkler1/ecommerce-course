@@ -21,17 +21,17 @@ const imgsrc = [
 
 var map = new Map();
 map.set('name0', 'SSD');
-map.set('price0', 20000);
+map.set('price0', 20);
 map.set('desc0', "Solid-state drive for your computer");
 map.set('imgsrc0', "ssd.jpg");
 
 map.set('name1', 'RAM');
-map.set('price1', 40000);
+map.set('price1', 40);
 map.set('desc1', "Random access memory for your computer");
 map.set('imgsrc1', "ram.jpg");
 
 map.set('name2', 'SCB');
-map.set('price2', 50000);
+map.set('price2', 50);
 map.set('desc2', "Small computer board for electronic use");
 map.set('imgsrc2', "scb.jpg");
 
@@ -73,7 +73,7 @@ function checkSelected() {
 }
 
 for (let i = 0; i < 3; i++) {
-        let word1 = '<img width="350px" height="200px" src="';
+        let word1 = '<img  width="640px" height="350px" src="';
         let word2 = '">';
         let word3 ='imgsrc'
         let word4 ='name'
@@ -85,6 +85,5 @@ for (let i = 0; i < 3; i++) {
         document.getElementById(string4.concat(i)).innerHTML = map.get(word5.concat(i));
         document.getElementById(string5.concat(i)).innerHTML = map.get(word6.concat(i));
     }
-
 
 
