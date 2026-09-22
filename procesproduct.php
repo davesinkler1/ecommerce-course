@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
   <title>Add product form</title>  
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <?php 
@@ -41,19 +42,48 @@
 }
 ?>
 
- <div style="display: grid;  grid-column: 1 / span 2;">
+ <div id="formContainer">
   <form method="post" id="myForm" 
   action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
   <label>Name of product:</label>
-  <input type="text" id="name" name="name"> <span><?php echo $nameErr;?></span>
+  <input type="text" id="name" name="name" class="form-input"> <br> <p class="form-warning"><?php echo $nameErr;?></p> <br>
   <label>Price of product: </label>
-  <input type="text" id="price" name="price"> <span><?php echo $priceErr;?></span>
+  <input type="text" id="price" name="price" class="form-input"> <br> <p class="form-warning"><?php echo $priceErr;?></p> <br>
   <label>Description of product: </label>
-  <input type="text" id="desc" name="desc"> <span><?php echo $descErr;?></span>
+  <input type="text" id="desc" name="desc" class="form-input"> <br> <p class="form-warning"><?php echo $descErr;?></p> <br>
   <label>Stock of product: </label>
-  <input type="text" id="stock" name="stock"> <span><?php echo $stockErr;?></span>
+  <input type="text" id="stock" name="stock" class="form-input"> <br> <p class="form-warning"><?php echo $stockErr;?></p> <br>
   <br><br>
-  <input type="submit" value="Submit" onclick="">
+  <input type="submit" value="Submit" onclick="EmptyAlert()">
 </form>
 </div>
+<script>
+  function EmptyAlert() {
+    console.log("called")
+    if (document.getElementById("name").value.trim() === "") {
+        alert(<?php echo $nameErr; ?>);
+    } else {
+        console.log("not empty");
+    }
+
+
+    if (document.getElementById("price").value.trim() === "") {
+        alert(<?php echo $priceErr; ?>);
+    } else {
+      console.log("not empty");
+    }
+
+    if (document.getElementById("desc").value.trim() === "") {
+        alert(<?php echo $descErr; ?>);
+    } else {
+      console.log("not empty");
+    }
+
+    if (document.getElementById("stock").value.trim() === "") {
+        alert(<?php echo $stockErr; ?>);
+    } else {
+      console.log("not empty");
+    }
+  }
+</script>
 </body>

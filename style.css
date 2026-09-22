@@ -1,0 +1,13 @@
+#formContainer {
+    display: flex;
+}
+
+.form-input {
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-warning {
+    margin: auto;
+}
