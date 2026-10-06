@@ -5,10 +5,17 @@
 </head>
 <body>
   <?php 
+  require 'C:\xampp\htdocs\database_conn.php'
+
   $nameErr = $priceErr = $descErr = $stockErr = "";
   $name = $price = $desc = $stock = "";
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = trim($_POST['name']);
+    $price = $_POST['price'];
+    $description = $_POST['desc'];
+    $stock = $_POST['stock'];
+
     if (empty($_POST["name"])) {
       echo "Name is required";
     } else {
@@ -35,11 +42,17 @@
   }
 
   function test_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+  }
+
+  $sql = "INSERT INTO products (name, price, description, stock) VALUES ()"
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([$name, $price, $description, $stock]);
+
+  $conn->close();
 ?>
 
  <div id="formContainer">
@@ -61,26 +74,26 @@
   function EmptyAlert() {
     console.log("called")
     if (document.getElementById("name").value.trim() === "") {
-        alert(<?php echo $nameErr; ?>);
+        alert(<?php echo $nameErr ?>);
     } else {
         console.log("not empty");
     }
 
 
     if (document.getElementById("price").value.trim() === "") {
-        alert(<?php echo $priceErr; ?>);
+        alert(<?php echo $priceErr ?>);
     } else {
       console.log("not empty");
     }
 
     if (document.getElementById("desc").value.trim() === "") {
-        alert(<?php echo $descErr; ?>);
+        alert(<?php echo $descErr ?>);
     } else {
       console.log("not empty");
     }
 
     if (document.getElementById("stock").value.trim() === "") {
-        alert(<?php echo $stockErr; ?>);
+        alert(<?php echo $stockErr ?>);
     } else {
       console.log("not empty");
     }

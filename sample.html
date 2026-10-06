@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaStore - Premium Modern E-Commerce</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 w-full glass-nav border-b border-slate-200/80 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="resetFilters()">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white font-black text-xl shadow-md shadow-brand-500/20">
+                        N
+                    </div>
+                    <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-brand-900 to-brand-600 bg-clip-text text-transparent">
+                        NexaStore
+                    </span>
+                </div>
+
+                <!-- Desktop Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-lg mx-8 relative">
+                    <input type="text" id="search-input" placeholder="Cari gadget, sepatu, baju, perabotan..." 
+                        class="w-full pl-11 pr-4 py-2.5 bg-slate-100/80 border border-transparent rounded-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-500/10 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Right Action Buttons -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- Wishlist Button -->
+                    <button onclick="toggleWishlistModal()" class="relative p-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors group">
+                        <i class="fa-regular fa-heart text-xl transition-transform group-hover:scale-110"></i>
+                        <span id="wishlist-badge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+
+                    <!-- Cart Button -->
+                    <button onclick="toggleCartDrawer()" class="relative p-2.5 text-slate-600 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors group">
+                        <i class="fa-solid fa-bag-shopping text-xl transition-transform group-hover:scale-110"></i>
+                        <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-brand-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+
+                    <!-- Mobile Filter Toggle Button -->
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2.5 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                        <i class="fa-solid fa-sliders text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="pb-4 md:hidden">
+                <div class="relative w-full">
+                    <input type="text" id="mobile-search-input" placeholder="Cari produk..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:bg-white">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Body Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Hero Carousel Banner -->
+        <section class="relative overflow-hidden rounded-3xl bg-slate-900 text-white shadow-2xl">
+            <div id="carousel-slides" class="relative h-64 sm:h-80 md:h-96 w-full flex transition-transform duration-700 ease-out">
+                <!-- Slide 1 -->
+                <div class="w-full flex-shrink-0 h-full relative flex items-center">
+                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Promo Flash Sale">
+                    <div class="relative z-10 max-w-xl px-6 sm:px-12 space-y-3">
+                        <span class="inline-block px-3 py-1 bg-brand-500 text-white font-semibold text-xs rounded-full uppercase tracking-wider">Mega Sale 10.10</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">Diskon Hingga 50% Untuk Produk Elektronik</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm line-clamp-2">Upgrade gadget kamu hari ini dengan penawaran eksklusif dan jaminan garansi resmi NexaStore.</p>
+                        <button onclick="filterCategory('Elektronik')" class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-brand-50 transition-colors shadow-lg">
+                            Belanja Sekarang <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="w-full flex-shrink-0 h-full relative flex items-center">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Fashion Trending">
+                    <div class="relative z-10 max-w-xl px-6 sm:px-12 space-y-3">
+                        <span class="inline-block px-3 py-1 bg-emerald-500 text-white font-semibold text-xs rounded-full uppercase tracking-wider">Koleksi Terbaru</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">Tampil Style & Trendy Musim Ini</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm line-clamp-2">Temukan pilihan busana & outfit kekinian dari merek-merek ternama dunia.</p>
+                        <button onclick="filterCategory('Pakaian')" class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-emerald-50 transition-colors shadow-lg">
+                            Lihat Koleksi <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carousel Nav Dots -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                <button onclick="setSlide(0)" class="carousel-dot w-3 h-3 rounded-full bg-white opacity-100 transition-all"></button>
+                <button onclick="setSlide(1)" class="carousel-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all"></button>
+            </div>
+        </section>
+
+        <!-- Content Area: Sidebar Filters & Catalog Grid -->
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+            <!-- Desktop Sidebar Filter -->
+            <aside class="hidden lg:block w-64 flex-shrink-0 space-y-6 sticky top-28 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-filter text-brand-600 mr-2"></i>Filter</span>
+                        <button onclick="resetFilters()" class="text-xs text-brand-600 hover:text-brand-700 font-semibold">Reset All</button>
+                    </h3>
+                    
+                    <!-- Category Filter -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Kategori</label>
+                        <div id="category-filters-container" class="space-y-1">
+                            <!-- JS populated categories -->
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- Price Range Filter -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Maksimal</label>
+                        <span id="price-value" class="text-sm font-bold text-brand-600">Rp 50.000.000</span>
+                    </div>
+                    <input type="range" id="price-range" min="50000" max="50000000" step="250000" value="50000000"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                    <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                        <span>Rp 50rb</span>
+                        <span>Rp 50jt</span>
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- Minimum Rating Filter -->
+                <div class="space-y-2">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Rating Minimum</label>
+                    <select id="rating-filter" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="0">Semua Rating</option>
+                        <option value="4.5">⭐ 4.5 & Keatas</option>
+                        <option value="4.0">⭐ 4.0 & Keatas</option>
+                        <option value="3.5">⭐ 3.5 & Keatas</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Catalog & Sorting Header -->
+            <div class="flex-1 w-full space-y-6">
+
+                <!-- Toolbar: Result count & Sorting -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="text-sm text-slate-500 font-medium">
+                        Menampilkan <span id="showing-count" class="font-bold text-slate-900">0</span> dari <span id="total-count" class="font-bold text-slate-900">0</span> produk
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <label for="sort-select" class="text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Urutkan:</label>
+                        <select id="sort-select" class="w-full sm:w-auto p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer">
+                            <option value="default">Rekomendasi / Populer</option>
+                            <option value="price-low">Harga: Terendah -> Tertinggi</option>
+                            <option value="price-high">Harga: Tertinggi -> Terendah</option>
+                            <option value="name-asc">Nama: A -> Z</option>
+                            <option value="name-desc">Nama: Z -> A</option>
+                            <option value="rating-high">Rating Tertinggi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filter Tags -->
+                <div id="active-tags" class="flex flex-wrap gap-2 empty:hidden"></div>
+
+                <!-- Product Grid -->
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- JS populated products -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-16 bg-white rounded-3xl border border-dashed border-slate-300 text-center">
+                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400 text-3xl">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800">Produk Tidak Ditemukan</h3>
+                    <p class="text-sm text-slate-500 max-w-sm mt-1 mb-6">Coba ubah kata kunci pencarian atau sesuaikan filter kategori & harga kamu.</p>
+                    <button onclick="resetFilters()" class="px-5 py-2.5 bg-brand-600 text-white text-sm font-bold rounded-xl shadow-md hover:bg-brand-700 transition-colors">
+                        Reset Filter
+                    </button>
+                </div>
+
+                <!-- Pagination Nav -->
+                <div id="pagination-container" class="flex items-center justify-center gap-2 pt-6">
+                    <!-- JS populated pagination -->
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-sm mt-20 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-white font-black text-xl">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-sm">N</div>
+                    NexaStore
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Platform e-commerce terpercaya dengan koleksi terlengkap, kualitas terjamin, dan pengiriman super cepat ke seluruh Indonesia.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Kategori Populer</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" onclick="filterCategory('Elektronik')" class="hover:text-white transition-colors">Elektronik & Gadget</a></li>
+                    <li><a href="#" onclick="filterCategory('Pakaian')" class="hover:text-white transition-colors">Fashion & Pakaian</a></li>
+                    <li><a href="#" onclick="filterCategory('Sepatu')" class="hover:text-white transition-colors">Sepatu Sneakers</a></li>
+                    <li><a href="#" onclick="filterCategory('Rumah Tangga')" class="hover:text-white transition-colors">Perabotan Rumah</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Layanan Pelanggan</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-white transition-colors">Pusat Bantuan</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Cara Pembelian</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Pengiriman & Lacak Pesanan</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Kebijakan Pengembalian</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Metode Pembayaran</h4>
+                <div class="flex flex-wrap gap-2 text-xs font-semibold text-slate-300">
+                    <span class="px-2.5 py-1.5 bg-slate-800 rounded border border-slate-700">BCA</span>
+                    <span class="px-2.5 py-1.5 bg-slate-800 rounded border border-slate-700">Mandiri</span>
+                    <span class="px-2.5 py-1.5 bg-slate-800 rounded border border-slate-700">QRIS</span>
+                    <span class="px-2.5 py-1.5 bg-slate-800 rounded border border-slate-700">Gopay</span>
+                    <span class="px-2.5 py-1.5 bg-slate-800 rounded border border-slate-700">OVO</span>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+            &copy; 2026 NexaStore Inc. All rights reserved. Built with Tailwind CSS & Vanilla JS.
+        </div>
+    </footer>
+
+    <!-- Cart Drawer Modal -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+        <!-- Backdrop -->
+        <div onclick="toggleCartDrawer()" id="cart-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm pointer-events-auto"></div>
+        
+        <!-- Drawer Body -->
+        <div class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out" id="cart-drawer-panel">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-brand-600 text-xl"></i>
+                    <h3 class="text-lg font-bold text-slate-900">Keranjang Belanja</h3>
+                </div>
+                <button onclick="toggleCartDrawer()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4">
+                <!-- JS Populated Cart Items -->
+            </div>
+
+            <!-- Cart Footer / Summary -->
+            <div class="p-6 border-t border-slate-100 bg-slate-50 space-y-4">
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between text-slate-500">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal" class="font-bold text-slate-800">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500">
+                        <span>Pengiriman</span>
+                        <span class="text-emerald-600 font-semibold">GRATIS</span>
+                    </div>
+                    <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+                        <span>Total Bayar</span>
+                        <span id="cart-total" class="text-brand-600">Rp 0</span>
+                    </div>
+                </div>
+
+                <button onclick="checkout()" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
+                    <span>Lanjut ke Checkout</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div id="quickview-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div onclick="closeQuickView()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+        
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden z-10 flex flex-col md:flex-row max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 z-20 w-10 h-10 bg-white/80 hover:bg-white text-slate-600 rounded-full flex items-center justify-center shadow-md backdrop-blur-md">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="md:w-1/2 bg-slate-100 relative min-h-[250px]">
+                <img id="qv-image" class="w-full h-full object-cover" src="" alt="">
+            </div>
+
+            <div class="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span id="qv-category" class="px-2.5 py-1 bg-brand-50 text-brand-600 text-xs font-bold rounded-full uppercase tracking-wider"></span>
+                        <span class="text-xs text-amber-500 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-star"></i> <span id="qv-rating"></span>
+                        </span>
+                    </div>
+
+                    <h2 id="qv-title" class="text-2xl font-bold text-slate-900"></h2>
+                    <p id="qv-price" class="text-2xl font-black text-brand-600"></p>
+                    <p id="qv-description" class="text-sm text-slate-500 leading-relaxed"></p>
+                </div>
+
+                <div class="space-y-3 pt-4 border-t border-slate-100">
+                    <button id="qv-add-btn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <span>Tambah Ke Keranjang</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div id="wishlist-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div onclick="toggleWishlistModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 z-10 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-rose-500"></i> Wishlist Saya
+                </h3>
+                <button onclick="toggleWishlistModal()" class="text-slate-400 hover:text-slate-600 p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="wishlist-items-container" class="flex-grow overflow-y-auto py-4 space-y-4">
+                <!-- Wishlist Items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Filter Modal -->
+    <div id="mobile-sidebar" class="fixed inset-0 z-50 lg:hidden pointer-events-none transition-opacity duration-300 opacity-0">
+        <div onclick="toggleMobileSidebar()" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm pointer-events-auto"></div>
+        <div id="mobile-sidebar-panel" class="fixed top-0 bottom-0 left-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 pointer-events-auto transform -translate-x-full transition-transform duration-300 overflow-y-auto space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <h3 class="font-bold text-slate-900">Filter Produk</h3>
+                <button onclick="toggleMobileSidebar()" class="text-slate-400 p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Kategori</label>
+                <div id="mobile-category-filters" class="space-y-1"></div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Maksimal</label>
+                    <span id="mobile-price-value" class="text-sm font-bold text-brand-600">Rp 50.000.000</span>
+                </div>
+                <input type="range" id="mobile-price-range" min="50000" max="50000000" step="250000" value="50000000"
+                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+            </div>
+
+            <button onclick="toggleMobileSidebar()" class="w-full py-3 bg-brand-600 text-white font-bold rounded-xl">
+                Terapkan Filter
+            </button>
+        </div>
+    </div>
+
+<script src="sample.js">   
+</script>
+</body>
+</html>

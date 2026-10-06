@@ -1,0 +1,35 @@
+   <!-- Hero Carousel Banner -->
+        <section class="relative overflow-hidden rounded-3xl bg-slate-900 text-white shadow-2xl">
+            <div id="carousel-slides" class="relative h-64 sm:h-80 md:h-96 w-full flex transition-transform duration-700 ease-out">
+                <!-- Slide 1 -->
+                <div class="w-full flex-shrink-0 h-full relative flex items-center">
+                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Promo Flash Sale">
+                    <div class="relative z-10 max-w-xl px-6 sm:px-12 space-y-3">
+                        <span class="inline-block px-3 py-1 bg-brand-500 text-white font-semibold text-xs rounded-full uppercase tracking-wider">Mega Sale 10.10</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">Diskon Hingga 50% Untuk Produk Elektronik</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm line-clamp-2">Upgrade gadget kamu hari ini dengan penawaran eksklusif dan jaminan garansi resmi NexaStore.</p>
+                        <button onclick="filterCategory('Elektronik')" class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-brand-50 transition-colors shadow-lg">
+                            Belanja Sekarang <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="w-full flex-shrink-0 h-full relative flex items-center">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Fashion Trending">
+                    <div class="relative z-10 max-w-xl px-6 sm:px-12 space-y-3">
+                        <span class="inline-block px-3 py-1 bg-emerald-500 text-white font-semibold text-xs rounded-full uppercase tracking-wider">Koleksi Terbaru</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">Tampil Style & Trendy Musim Ini</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm line-clamp-2">Temukan pilihan busana & outfit kekinian dari merek-merek ternama dunia.</p>
+                        <button onclick="filterCategory('Pakaian')" class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-emerald-50 transition-colors shadow-lg">
+                            Lihat Koleksi <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carousel Nav Dots -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                <button onclick="setSlide(0)" class="carousel-dot w-3 h-3 rounded-full bg-white opacity-100 transition-all"></button>
+                <button onclick="setSlide(1)" class="carousel-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all"></button>
+            </div>
+        </section>

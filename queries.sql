@@ -1,5 +1,5 @@
-INSERT INTO `products` (name, product, price, description, stock)
-VALUES (NULL, NULL, NULL, NULL, NULL)
+INSERT INTO `products` (`id`, `name`, `product`, `price`, `description`, `stock`)
+VALUES (NULL, NULL, NULL, NULL, NULL);
 
 SELECT name, product, price, description, stock FROM products;
 
