@@ -47,31 +47,26 @@
 </head>
 
 <?php 
-    require_once 'database_conn.php';
+   require_once 'database_conn.php';
 
-    $i = 0;
+    // 1. Get current active filters from URL
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+    $category_filter = isset($_GET['product']) ? trim($_GET['product']) : '';
 
-    $categories_sql = "SELECT product FROM products WHERE product IS NOT NULL
-    AND product != '' ORDER BY product";
-    $sql = "SELECT id, name, product, price, description, stock FROM products";
+    // 2. Fetch distinct categories with product counts for the sidebar filter
+    $categories_sql = "SELECT product, COUNT(*) as count 
+                      FROM products 
+                      WHERE product IS NOT NULL AND product != '' 
+                      GROUP BY product 
+                      ORDER BY product ASC";
+    $categories_stmt = $pdo->query($categories_sql);
+    $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $categories = $pdo->query($categories_sql)->fetchAll();
-
-    $search = isset($_GET['search']) ? $_GET['search'] : '';
-    $category_filter = isset($_GET['product']) ? $_GET['category'] : '';
-
-    $sql = "SELECT id, name, product, price, description, stock, image FROM products
-    WHERE 1=1";
+    // 3. Build dynamic query for filtered product list
+    $sql = "SELECT id, name, product, price, description, stock, image FROM products WHERE 1=1";
     $params = [];
 
-    $sql2 = "SELECT COUNT(*) FROM products";
-    $stmt = $pdo->query($sql2);
-    $rowCount = $stmt->fetchColumn();
-
-    $stmt = $pdo->query("SELECT * FROM products LIMIT 1");
-    $column_count = $stmt->columnCount();
-
-    if(!empty($search)) {
+    if (!empty($search)) {
         $sql .= " AND name LIKE ?";
         $params[] = '%' . $search . '%';
     }
@@ -85,7 +80,10 @@
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
-    $products = $stmt->fetchAll();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Total products count for the header toolbar
+    $total_products = count($products);
 ?>
 
 <body class="min-h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
@@ -157,49 +155,44 @@
         <div class="flex flex-col lg:flex-row gap-8 items-start">
 
             <!-- Desktop Sidebar Filter -->
+            <!-- Desktop Category Sidebar Filter -->
             <aside class="hidden lg:block w-64 flex-shrink-0 space-y-6 sticky top-28 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                 <div>
                     <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
                         <span><i class="fa-solid fa-filter text-brand-600 mr-2"></i>Filter</span>
-                        <button onclick="resetFilters()" class="text-xs text-brand-600 hover:text-brand-700 font-semibold">Reset All</button>
+                        <a href="index.php" class="text-xs text-brand-600 hover:text-brand-700 font-semibold">Reset All</a>
                     </h3>
                     
-                    <!-- Category Filter -->
+                    <!-- Dynamic Category List -->
                     <div class="space-y-2">
                         <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Kategori</label>
-                        <div id="category-filters-container" class="space-y-1">
-                            <!-- JS populated categories -->
+                        <div class="space-y-1">
+                            <!-- Option for All Categories -->
+                            <a href="index.php<?php echo !empty($search) ? '?search='.urlencode($search) : ''; ?>" 
+                               class="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold transition-all <?php echo empty($category_filter) ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50'; ?>">
+                                <span>Semua Kategori</span>
+                            </a>
+
+                            <!-- Loop through DB categories -->
+                            <?php foreach ($categories as $cat): ?>
+                                <?php 
+                                    $is_selected = ($category_filter === $cat['product']);
+                                    $query_params = array_filter([
+                                        'search' => $search,
+                                        'product' => $cat['product']
+                                    ]);
+                                    $link_url = 'index.php?' . http_build_query($query_params);
+                                ?>
+                                <a href="<?php echo $link_url; ?>" 
+                                   class="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?php echo $is_selected ? 'bg-brand-600 text-white font-semibold' : 'text-slate-600 hover:bg-slate-50'; ?>">
+                                    <span class="truncate"><?php echo htmlspecialchars($cat['product']); ?></span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full <?php echo $is_selected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'; ?>">
+                                        <?php echo $cat['count']; ?>
+                                    </span>
+                                </a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <!-- Price Range Filter -->
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Maksimal</label>
-                        <span id="price-value" class="text-sm font-bold text-brand-600">Rp 50.000.000</span>
-                    </div>
-                    <input type="range" id="price-range" min="50000" max="50000000" step="250000" value="50000000"
-                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                    <div class="flex justify-between text-[11px] text-slate-400 font-medium">
-                        <span>Rp 50rb</span>
-                        <span>Rp 50jt</span>
-                    </div>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <!-- Minimum Rating Filter -->
-                <div class="space-y-2">
-                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Rating Minimum</label>
-                    <select id="rating-filter" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
-                        <option value="0">Semua Rating</option>
-                        <option value="4.5">⭐ 4.5 & Keatas</option>
-                        <option value="4.0">⭐ 4.0 & Keatas</option>
-                        <option value="3.5">⭐ 3.5 & Keatas</option>
-                    </select>
                 </div>
             </aside>
 
@@ -348,7 +341,7 @@
     <!-- Cart Drawer Modal -->
     <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
         <!-- Backdrop -->
-        <div onclick="toggleCartDrawer()" id="cart-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm pointer-events-auto"></div>
+        
         
         <!-- Drawer Body -->
         <div class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300 ease-in-out" id="cart-drawer-panel">
