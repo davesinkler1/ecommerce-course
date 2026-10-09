@@ -15,6 +15,7 @@
     $price = $_POST['price'];
     $description = $_POST['desc'];
     $stock = $_POST['stock'];
+    $image = $_POST['image'];
 
     if (empty($_POST["name"])) {
       echo "Name is required";
@@ -48,13 +49,21 @@
     return $data;
   }
 
-  $sql = "INSERT INTO products (name, price, description, stock) VALUES ()"
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute([$name, $price, $description, $stock]);
+  if (!empty($name) && !empty($price) && !empty($desc) && !empty($stock)) {
 
-  $conn->close();
+    $sql = "INSERT INTO products (id, name, price, description, stock, image) VALUES (NULL, :name, ;price, :description, :stock, :image)";
+    $stmt = $pdo->prepare($sql);
+    if (!empty($image)) {
+      $stmt->execute([$name, $price, $description, $stock, $image]);
+    } elseif (empty($image)) {
+       $stmt->execute([$name, $price, $description, $stock]);
+    }
+
+    $stmt = $pdo->query("SELECT * FROM products");
+    $rows = $stmt->fetchAll();
+  }
 ?>
-
+ <label>Add product</label>
  <div id="formContainer">
   <form method="post" id="myForm" 
   action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -66,10 +75,22 @@
   <input type="text" id="desc" name="desc" class="form-input"> <br> <p class="form-warning"><?php echo $descErr;?></p> <br>
   <label>Stock of product: </label>
   <input type="text" id="stock" name="stock" class="form-input"> <br> <p class="form-warning"><?php echo $stockErr;?></p> <br>
+  <label>Image linkt: </label>
+  <input type="text" id="image" name="image" class="form-input"> <br> <p class="form-warning"><?php echo $stockErr;?></p> <br>
   <br><br>
   <input type="submit" value="Submit" onclick="EmptyAlert()">
 </form>
 </div>
+<?php foreach ($rows as $row): ?>
+    <tr>
+        <td><?php echo htmlspecialchars($row['id']); ?></td>
+        <td><?php echo htmlspecialchars($row['name']); ?></td>
+        <td><?php echo htmlspecialchars($row['price']); ?></td>
+        <td><?php echo htmlspecialchars($row['desc']); ?></td>
+        <td><?php echo htmlspecialchars($row['stock']); ?></td>
+        <td><?php echo htmlspecialchars($row['image']); ?></td>
+  </tr>
+<?php endphp; ?>
 <script>
   function EmptyAlert() {
     console.log("called")

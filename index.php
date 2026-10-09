@@ -104,6 +104,8 @@
                         NexaStore
                     </span>
                     <a href="processproduct.php" style="margin-left: 5%;">Add product</a>
+                    <a href="processproduct.php" style="margin-left: 5%;">Update product</a>
+                    <a href="processproduct.php" style="margin-left: 5%;">Delete product</a>
                 </div>
 
                 <!-- Desktop Search Bar -->
@@ -255,7 +257,7 @@
                 <span class="text-xs text-slate-400 block font-medium">Stock</span>
                 <span><?php echo htmlspecialchars($product['stock']) ?></span>
             </div>
-            <button onclick="addToCart(${product.id})" class="px-3.5 py-2.5 bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white rounded-xl font-bold text-xs transition-colors flex items-center gap-1.5 shadow-sm">
+            <button onclick="addToCart(<?php echo json_encode($product['id']) ?>)" class="px-3.5 py-2.5 bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white rounded-xl font-bold text-xs transition-colors flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-cart-plus"></i>
                 <span>Beli</span>
             </button>
